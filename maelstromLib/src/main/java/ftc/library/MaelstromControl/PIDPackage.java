@@ -7,13 +7,15 @@ public class PIDPackage {
             distanceKp, distanceKi,distanceKd,
             turnKp,turnKi,turnKd,
             rangeKp,rangeKi,rangeKd,
-            sideKp,sideKi,sideKd ;
+            sideKp,sideKi,sideKd,
+            drivePosKp, drivePosKi, drivePosKd ;
 
     public PIDPackage(double dtKp,double  dtKi,double  dtKd,
                       double distanceKp,double  distanceKi,double distanceKd,
                       double turnKp,double turnKi,double turnKd,
                       double rangeKp,double rangeKi,double rangeKd,
-                      double sideKp,double sideKi,double sideKd){
+                      double sideKp,double sideKi,double sideKd,
+                      double drivePosKp, double drivePosKi, double drivePosKd){
         this.dtKp = dtKp;
         this.dtKi = dtKi;
         this.dtKd = dtKd;
@@ -29,6 +31,9 @@ public class PIDPackage {
         this.sideKp = sideKp;
         this.sideKi = sideKi;
         this.sideKd = sideKd;
+        this.drivePosKp = drivePosKp;
+        this.drivePosKi = drivePosKi;
+        this.drivePosKd = drivePosKd;
     }
 
     public PIDPackage(){
@@ -47,6 +52,9 @@ public class PIDPackage {
         this.sideKp = MaelstromUtils.KP.SIDE;
         this.sideKi = MaelstromUtils.KI.SIDE;
         this.sideKd = MaelstromUtils.KD.SIDE;
+        this.drivePosKp = MaelstromUtils.KP.POS;
+        this.drivePosKi = MaelstromUtils.KI.POS;
+        this.drivePosKd = MaelstromUtils.KD.POS;
     }
 
     public double getDtKp(){
@@ -132,7 +140,6 @@ public class PIDPackage {
     public double getSideKd() {
         return sideKd;
     }
-
     public void setSideKp(double sideKp) {
         this.sideKp = sideKp;
     }
@@ -141,6 +148,24 @@ public class PIDPackage {
     }
     public void setSideKd(double sideKd) {
         this.sideKd = sideKd;
+    }
+    public double getDrivePosKp(){
+        return drivePosKp;
+    }
+    public double getDrivePosKi(){
+        return drivePosKi;
+    }
+    public double getDrivePosKd(){
+        return drivePosKd;
+    }
+    public void setDrivePosKp(double drivePosKp){
+        this.drivePosKp = drivePosKp;
+    }
+    public void setDrivePosKi(double drivePosKi){
+        this.drivePosKp = drivePosKi;
+    }
+    public void setDrivePosKd(double drivePosKd){
+        this.drivePosKp = drivePosKd;
     }
 
     public PIDPackage getPIDPackage(){

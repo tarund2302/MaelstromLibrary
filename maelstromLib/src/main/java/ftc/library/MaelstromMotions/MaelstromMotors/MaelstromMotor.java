@@ -39,6 +39,10 @@ public class MaelstromMotor implements TimeConstants {
         encoder = new MaelstromEncoder(this,type);
         this.PID = new PIDController(Kp,Ki,Kd,1);
     }
+    public MaelstromMotor(String name, MotorModel model, HardwareMap hwMap){
+        motor = hwMap.dcMotor.get(name);
+        encoder = new MaelstromEncoder(this,model);
+    }
 
 
     public void init(HardwareMap hardwareMap, String name){

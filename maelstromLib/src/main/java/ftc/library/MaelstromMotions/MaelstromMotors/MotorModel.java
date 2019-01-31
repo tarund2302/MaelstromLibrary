@@ -2,12 +2,16 @@ package ftc.library.MaelstromMotions.MaelstromMotors;
 
 public enum  MotorModel {
 
-    ORBITAL20, NEVEREST40, NEVEREST60, USDIGITAL_E4T, REVHDHEX,NEVEREST_NAKED;
+    ORBITAL20, NEVEREST_3_7, E4T_ENCODER, NEVEREST40, NEVEREST60, USDIGITAL_E4T, REVHDHEX,NEVEREST_NAKED;
     public static double DEFAULT_CPR = 2240;
     public double CPR(MotorModel motorModel) {
         switch (motorModel){
             case ORBITAL20:
                 return 537.6;
+            case NEVEREST_3_7:
+                return 103;
+            case E4T_ENCODER:
+                return  537.6;
             case NEVEREST40:
                 return 1120;
             case NEVEREST60:
@@ -29,6 +33,8 @@ public enum  MotorModel {
         switch (motorModel) {
             case ORBITAL20:
                 return 340;
+            case NEVEREST_3_7:
+                return 1784;
             case NEVEREST40:
                 return 160;
             case NEVEREST60:

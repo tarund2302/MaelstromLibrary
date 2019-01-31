@@ -80,6 +80,7 @@ public class MaelstromUtils {
         public static final double TURN = +0.02;
         public static final double RANGE = +0.02;
         public static final double SIDE = +0.02;
+        public static final double POS = +0.02;
     }
     public class KI {
         public static final double DT = +0.003;
@@ -87,6 +88,7 @@ public class MaelstromUtils {
         public static final double TURN = +0.0;
         public static final double RANGE = +0.2;
         public static final double SIDE = +0.0;
+        public static final double POS = +0.0;
     }
     public class KD {
         public static final double DT = +0.0;
@@ -94,6 +96,7 @@ public class MaelstromUtils {
         public static final double TURN = +0.0;
         public static final double RANGE = +0.0;
         public static final double SIDE = +0.0;
+        public static final double POS = +0.0;
     }
 
     public enum AutoColor {
