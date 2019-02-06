@@ -1,5 +1,7 @@
 package ftc.library.MaelstromControl;
 
+import ftc.library.MaelstromSensors.MaelstromTimer;
+import ftc.library.MaelstromUtils.MaelstromUtils;
 import ftc.library.MaelstromUtils.TimeConstants;
 
 public class PIDController implements TimeConstants {
@@ -13,6 +15,7 @@ public class PIDController implements TimeConstants {
     private double previousError = 0;
     private double maxI;
     private double previousTime = 0;
+    private MaelstromTimer loopTimer = new MaelstromTimer();
 
 
     public PIDController(double KP, double KI, double KD, double maxI){
@@ -24,19 +27,23 @@ public class PIDController implements TimeConstants {
     public PIDController(double KP, double KI){
         this.KP = KP;
         this.KI = KI;
+        maxI = 0;
     }
 
     public PIDController(double KP, double KI, double KD){
         this.KP = KP;
         this.KI = KI;
         this.KD = KD;
+        maxI = 0;
     }
 
     public double power(double target, double currentLoc){
         double error = target - currentLoc;
         this.error = error;
-        double deltaTime = (System.nanoTime() - previousTime)/NANOSECS_PER_MIN;
+        double deltaTime = (System.nanoTime() - previousTime)/NANOSECS_PER_MIN/*loopTimer.milliSecs()*/;
+        //loopTimer.reset();
         i += Math.abs(currentLoc) > Math.abs(target) * 0.7 ? error*deltaTime : 0;
+        if(maxI != 0) i = Math.min(maxI, Math.max(-maxI, i));
         d = (error - previousError)/deltaTime;
         previousTime = System.nanoTime();
         previousError = error;

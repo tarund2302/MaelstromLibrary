@@ -14,18 +14,18 @@ public class MaelstromController extends Gamepad {
         this.name = name;
         this.gamepad = g;
     }
-
+    private double currLeftStickX = 0;
+    private double currLeftStickY = 0;
+    private double currRightStickX = 0;
+    private double currRightStickY = 0;
+    private double STEP_AMOUNT = 0.16;
 
     public boolean toggle(boolean boolState){
 
-        if(boolState){
-            currState = true;
-        }
+        if(boolState) currState = true;
         else{
             currState = false;
-            if(prevState){
-                taskState = !taskState;
-            }
+            if(prevState) taskState = !taskState;
         }
         prevState = currState;
 
@@ -47,6 +47,50 @@ public class MaelstromController extends Gamepad {
     public double rightStickY() {
         return gamepad.right_stick_y;
     }
+
+    public double getTan(double x, double y){
+        double tan = -y/x;
+        if (tan == Double.NEGATIVE_INFINITY || tan == Double.POSITIVE_INFINITY || tan != tan) tan = 0;
+        return tan;
+    }
+
+    public double lazyLeftStickX() {
+        if (leftStickX() < currLeftStickX) currLeftStickX -= STEP_AMOUNT;
+
+        else if (leftStickX() > currLeftStickX) currLeftStickX += STEP_AMOUNT;
+
+        if (Math.abs(leftStickX() - currLeftStickX) < STEP_AMOUNT) currLeftStickX = leftStickX();
+
+        return currLeftStickX;
+    }
+
+    public double lazyLeftStickY() {
+        if (leftStickY() < currLeftStickY)  currLeftStickY -= STEP_AMOUNT;
+         else if (leftStickY() > currLeftStickY) currLeftStickY += STEP_AMOUNT;
+
+        if (Math.abs(leftStickY() - currLeftStickY) < STEP_AMOUNT) currLeftStickY = leftStickY();
+
+        return currLeftStickY;
+    }
+
+    public double lazyRightStickY(){
+        if (rightStickY() < currRightStickY) currRightStickY -= STEP_AMOUNT;
+        else if (rightStickY() > currRightStickY) currRightStickY += STEP_AMOUNT;
+
+        if (Math.abs(rightStickY() - currRightStickY) < STEP_AMOUNT) currRightStickY = rightStickY();
+
+        return currRightStickY;
+    }
+
+    public double lazyRighStickX() {
+        if (rightStickX() < currRightStickX) currRightStickX -= STEP_AMOUNT;
+         else if (rightStickX() > currRightStickX) currRightStickX += STEP_AMOUNT;
+
+        if (Math.abs(rightStickX() - currRightStickX) < STEP_AMOUNT) currRightStickX = rightStickX();
+
+        return currRightStickX;
+    }
+
     public boolean rightStickButton(){return gamepad.right_stick_button;}
     public boolean leftStickButton(){return gamepad.left_stick_button;}
 

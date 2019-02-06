@@ -1,5 +1,7 @@
 package ftc.library.MaelstromUtils;
 
+import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import ftc.library.MaelstromWrappers.MaelstromLinearOp;
@@ -30,6 +32,11 @@ public class MaelstromUtils {
         return clippedValue;
     }
 
+    public static double clipValueToRange(double input, double upperRange){
+        double clippedValue = Math.min(input, upperRange);
+        return clippedValue;
+    }
+
     public static void  clipValueToRange (double[] input, double lowerRange, double upperRange) {
 
         for (int i = 0; i < input.length; i++) {
@@ -44,7 +51,6 @@ public class MaelstromUtils {
         for (int i = 0; i < values.length; i++) {
             maxValue = Math.max(maxValue, Math.abs(values[i]));
         }
-
 
         for (int i = 0; i < values.length; i++) {
             values[i] /= maxValue;

@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import ftc.library.MaelstromControl.PIDController;
 import ftc.library.MaelstromControl.PIDPackage;
 import ftc.library.MaelstromSensors.MaelstromEncoder;
+import ftc.library.MaelstromSensors.MaelstromLimitSwitch;
 import ftc.library.MaelstromUtils.TimeConstants;
 
 public class MaelstromMotor implements TimeConstants {
@@ -24,9 +25,11 @@ public class MaelstromMotor implements TimeConstants {
   private double minPosition, maxPosition;
   //private double motorCounts = NEVEREST_40_COUNTS_PER_REV;
   private double motorCounts = encoder.getCPR();
-  private boolean closedLoop;
+  private boolean closedLoop, limitDetection = false;
 
   private PIDController PID;
+  private MaelstromLimitSwitch minLim, maxLim = null;
+
 
     public MaelstromMotor(String name, MotorModel type,DcMotor.Direction direction, HardwareMap hwMap){
         motor = hwMap.dcMotor.get(name);
@@ -44,12 +47,30 @@ public class MaelstromMotor implements TimeConstants {
         encoder = new MaelstromEncoder(this,model);
     }
 
+    public void setLimits(MaelstromLimitSwitch min, MaelstromLimitSwitch max){
+        minLim = min; maxLim = max;
+        limitDetection = true;
+    }
+    public void setLimits(MaelstromLimitSwitch min){
+        minLim = min; maxLim = null;
+        limitDetection = true;
+    }
+
 
     public void init(HardwareMap hardwareMap, String name){
         motor = hardwareMap.dcMotor.get(name);
     }
 
     public void setPower(double power){
+        motorPower = power;
+        if(limitDetection){
+            if (minLim != null && minLim.pressed() && power < 0 ||
+                    maxLim != null && maxLim.pressed() && power > 0)
+                motorPower = 0;
+            else if (minLim != null && minLim.pressed()
+                    && power < 0 && maxLim == null)
+                motorPower = 0;
+        }
         this.power = power;
         motor.setPower(power);
     }
@@ -99,6 +120,14 @@ public class MaelstromMotor implements TimeConstants {
         targetPower = velocity;
         motorPower = calculateVelocityCorrection();
         if(!closedLoop) motorPower = targetPower;
+        if(limitDetection){
+            if (minLim != null && minLim.pressed() && power < 0 ||
+                    maxLim != null && maxLim.pressed() && power > 0)
+                motorPower = 0;
+            else if (minLim != null && minLim.pressed()
+                    && power < 0 && maxLim == null)
+                motorPower = 0;
+        }
         if(Math.abs(motorPower) < minPower && minPosition != 0) motorPower = 0;
         setPower(motorPower);
     }
@@ -129,7 +158,7 @@ public class MaelstromMotor implements TimeConstants {
         return angle;
     }
 
-    public void setAngle(double angle, double countsPerInch, double countsPerRev){
+    public void setAngle(double angle){
         double power = PID.power(angle, getAngle());
         motor.setPower(/*(power > 0 && getRPM() < 0) || (power < 0 && getRPM() > 0) ? 0:*/ power);
     }
@@ -145,6 +174,8 @@ public class MaelstromMotor implements TimeConstants {
     public int getCounts(){return motor.getCurrentPosition();}
 
     public double getPower(){return motor.getPower();}
+
+    public double getInches(){return encoder.getInches();}
 
     public void setDirection(DcMotor.Direction direction){motor.setDirection(direction);}
 

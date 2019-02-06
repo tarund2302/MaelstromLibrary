@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import java.util.Arrays;
 import java.util.List;
 
+import ftc.library.MaelstromSensors.MaelstromLimitSwitch;
+
 public class MaelstromMotorSystem {
     public MaelstromMotor motor1,motor2,motor3,motor4;
     private int numMotors;
@@ -51,7 +53,21 @@ public class MaelstromMotorSystem {
         motor1 = new MaelstromMotor(name1,encoder, direction,hwMap);
         motor2 = new MaelstromMotor(name2,encoder, direction,hwMap);
         motors = Arrays.asList(motor1,motor2);
-        numMotors = 4;
+        numMotors = 2;
+        model = encoder;
+    }
+    public MaelstromMotorSystem(String name1, String name2, String name3, double Kp, double Ki, double Kd, String systemName,DcMotorSimple.Direction direction, HardwareMap hwMap, MotorModel encoder){
+        this.systemName = systemName;
+        motor1 = new MaelstromMotor(name1,encoder, direction,hwMap);
+        motor2 = new MaelstromMotor(name2,encoder, direction,hwMap);
+        motor3 = new MaelstromMotor(name3,encoder, direction,hwMap);
+        motors = Arrays.asList(motor1,motor2,motor3);
+        for(MaelstromMotor motor : motors) {
+            motor.setKP(Kp);
+            motor.setKI(Ki);
+            motor.setKD(Kd);
+        }
+        numMotors = 3;
         model = encoder;
     }
 
@@ -65,7 +81,7 @@ public class MaelstromMotorSystem {
             motor.setKI(Ki);
             motor.setKD(Kd);
         }
-        numMotors = 4;
+        numMotors = 2;
         model = encoder;
     }
 
@@ -88,9 +104,17 @@ public class MaelstromMotorSystem {
     }
 
     public double getInches(){
-        double inches = motor1.getEncoder().getInches();
-        return inches;
+        double total = 0;
+        for (MaelstromMotor motor : motors) total += motor.getInches();
+        return total / numMotors;
     }
+
+    public void setLimitrs(MaelstromLimitSwitch min, MaelstromLimitSwitch max){
+        for(MaelstromMotor motor : motors){
+            motor.setLimits(min,max);
+        }
+    }
+
 
     public MaelstromMotorSystem runWithoutEncoders(){
         for (MaelstromMotor motor : motors){
@@ -107,13 +131,21 @@ public class MaelstromMotorSystem {
     }
 
     public double getAngle(){
-        double angle = motor1.getAngle();
-        return angle;
+        double total = 0;
+        for (MaelstromMotor motor : motors) total += motor.getAngle();
+        return total / numMotors;
+    }
+
+    public void setAngle(double angle){
+        for (MaelstromMotor motor : motors){
+            motor.setAngle(angle);
+        }
     }
 
     public double getCounts(){
-        double counts = motor1.getCounts();
-        return counts;
+        double total = 0;
+        for (MaelstromMotor motor : motors) total += motor.getCounts();
+        return total / numMotors;
     }
 
     public double getGearRatio(){
@@ -127,8 +159,9 @@ public class MaelstromMotorSystem {
     }
 
     public double getPower(){
-        double power = motor1.getPower();
-        return power;
+        double total = 0;
+        for (MaelstromMotor motor : motors) total += motor.getPower();
+        return total / numMotors;
     }
 
     public MotorModel getModel(){

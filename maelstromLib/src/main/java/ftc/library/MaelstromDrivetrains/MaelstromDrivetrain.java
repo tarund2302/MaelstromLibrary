@@ -59,7 +59,7 @@ public class MaelstromDrivetrain {
     }
 
     public double getPower(){
-        return leftDrive.getPower();
+        return (leftDrive.getPower() + rightDrive.getPower())/2;
     }
 
     public double getCounts(){
@@ -75,7 +75,7 @@ public class MaelstromDrivetrain {
     }
 
     public double getInches(){
-        return leftDrive.getInches();
+        return (leftDrive.getInches() + rightDrive.getInches())/2;
     }
 
     public DrivetrainModels getModel() {

@@ -9,6 +9,7 @@ import ftc.library.MaelstromDrivetrains.MaelstromDrivetrain;
 import ftc.library.MaelstromMotions.MaelstromMotors.Direction;
 import ftc.library.MaelstromSensors.MaelstromIMU;
 import ftc.library.MaelstromSensors.MaelstromOdometry;
+import ftc.library.MaelstromSensors.MaelstromTimer;
 import ftc.library.MaelstromUtils.MaelstromUtils;
 import ftc.library.MaelstromUtils.TimeConstants;
 import ftc.library.MaelstromWrappers.MaelstromController;
@@ -33,17 +34,22 @@ public abstract class MaelstromRobot implements TimeConstants {
     private double speeds[];
     public PIDController distanceDrive = new PIDController(pidPackage().getDistanceKp(),pidPackage().getDistanceKi(),pidPackage().getDistanceKd(),1);
 
-    public void driveDistance(double distance, double speed, Direction direction, long stopTime){
+    public void driveDistance(double distance, double speed, Direction direction, double stopTime, double timeout){
         dt.eReset();
         distance *= direction.value;
         double counts = distanceToCounts(distance);
-        long startTime = System.nanoTime();
+        MaelstromTimer timer = new MaelstromTimer();
+        MaelstromTimer timeoutTimer = new MaelstromTimer();
+        long startTime = /*System.nanoTime()*/ timer.startTime();
         long stopState = 0;
         //double initialHeading = imu.getRelativeYaw();
 
-        while(opModeActive() && stopState <= stopTime){
-            double position = dt.getCounts();
-            double power = (distanceDrive.power(counts,position))*speed;
+        while(opModeActive() && stopState <= stopTime /*!timer.elapsedTime(timeout, MaelstromTimer.Time.SECS)*/){
+            //double position = dt.getCounts();
+            double position = dt.getInches();
+            //double power = (distanceDrive.power(counts,position))*speed;
+            double power = (distanceDrive.power(distance,position))*speed;
+            timeoutTimer.reset();
             //double power = distanceDrive.power(distance,dt.getInches());
 
             drive(power);
@@ -51,22 +57,92 @@ public abstract class MaelstromRobot implements TimeConstants {
             feed.add("Power:",power);
             feed.add("Kp*error:",distanceDrive.getP());
             feed.add("Ki*i:",distanceDrive.getI());
-            feed.add("Distance:",countsToDistance(dt.getCounts()));
+            feed.add("Distance:",/*countsToDistance(dt.getCounts())*/dt.getInches());
             feed.add("Stop state:",stopState);
             feed.update();
 
             if(distanceDrive.getError() <= 0.5){
-                stopState = (System.nanoTime() - startTime) / NANOSECS_PER_MILISEC;
+                //stopState = (System.nanoTime() - startTime) / NANOSECS_PER_MILISEC;
+                stopState = timer.stopState();
             }
             else startTime = System.nanoTime();
 
-            if(startTime/NANOSECS_PER_MILISEC >= 5000) break;
+            if(/*startTime/NANOSECS_PER_MILISEC >= 5000*/timeoutTimer.elapsedTime(timeout, MaelstromTimer.Time.SECS)) break;
         }
         stop();
     }
     public void driveDistance(double distance){
-        driveDistance(distance,0.5,Direction.FORWARD,1000);
+        driveDistance(distance,0.5,Direction.FORWARD,0,10);
     }
+    public void drive(double distance, double maxSpeed, double angle, Direction direction, long stopTime){
+        if(dt.getModel() == DrivetrainModels.MECH_FIELD || dt.getModel() == DrivetrainModels.MECH_ROBOT){
+            double frontLeftPower;
+            double backLeftPower;
+            double frontRightPower;
+            double backRightPower;
+
+            dt.eReset();
+
+            long startTime = System.nanoTime();
+            long stopState = 0;
+            //double initialHeading = imu.getRelativeYaw();
+            angle = Math.toRadians(angle);
+            double adjustedAngle = angle + Math.PI/4;
+            distance *= direction.value;
+            double counts = distanceToCounts(distance);
+
+            frontLeftPower = Math.sin(adjustedAngle);
+            backLeftPower = Math.cos(adjustedAngle);
+            frontRightPower = Math.cos(adjustedAngle);
+            backRightPower = Math.sin(adjustedAngle);
+
+            while (opModeActive() && (stopState <= stopTime)) {
+                double position = dt.getCounts();
+                double power = (distanceDrive.power(counts,position));
+
+                speeds[0] = frontLeftPower * power;
+                speeds[1] = backLeftPower * power;
+                speeds[2] = frontRightPower * power;
+                speeds[3] = backRightPower * power;
+
+                MaelstromUtils.normalizeSpeedsToMax(speeds, maxSpeed);
+
+                dt.leftDrive.motor1.setPower(speeds[0]);
+                dt.leftDrive.motor2.setPower(speeds[1]);
+                dt.rightDrive.motor1.setPower(speeds[2]);
+                dt.rightDrive.motor2.setPower(speeds[3]);
+
+                feed.add("frontLeft:",speeds[0]);
+                feed.add("backLeft:",speeds[1]);
+                feed.add("frontRight:",speeds[2]);
+                feed.add("backRight:",speeds[3]);
+                feed.add("IMU:",imu.getRelativeYaw());
+                feed.add("Stop State:",stopState);
+
+                if(distanceDrive.getError() <= 0.5){
+                    stopState = (System.nanoTime() - startTime) / NANOSECS_PER_MILISEC;
+                }
+                else startTime = System.nanoTime();
+
+                if(startTime/NANOSECS_PER_MILISEC >= 5000) break;
+            }
+            stop();
+        }
+        else{
+            feed.add("CANNOT RUN: INCORRECT DRIVETRAIN MODEL");
+            feed.update();
+        }
+
+    }
+    public void drive(double distance, double maxSpeed, double angle, Direction direction){
+        drive(distance, maxSpeed, angle, direction, 0);
+    }
+    public void drive(double distance, double angle, Direction direction){
+        drive(distance, 1, angle, direction);
+    }
+/*    public void drive(double distance, double angle){
+        drive(distance, angle, Direction.FORWARD);
+    }*/
 
     public void rotate(double speed){
         dt.leftDrive.setPower(-speed);
@@ -94,7 +170,7 @@ public abstract class MaelstromRobot implements TimeConstants {
             double position = imu.getRelativeYaw();
             double power = (turnAngle.power(degrees,position))*speed;
 
-            dt.setPower(-power,power);
+            rotate(power);
 
             feed.add("Power:",power);
             feed.add("Kp*error:",turnAngle.getP());
@@ -143,7 +219,6 @@ public abstract class MaelstromRobot implements TimeConstants {
         while(opModeActive() && (stopState <= stopTime)){
             angle = Math.atan2(xTarget-xPos.getPosition(),yTarget-yPos.getPosition());
             double adjustedAngle = angle + Math.PI;
-            //PIDController drivePos = new PIDController(pidPackage().getDrivePosKp(),pidPackage().getDrivePosKi(),pidPackage().getDrivePosKd(),1);
 
             frontLeftPower = Math.sin(adjustedAngle);
             backLeftPower = Math.cos(adjustedAngle);
@@ -183,8 +258,11 @@ public abstract class MaelstromRobot implements TimeConstants {
     public void driveToPos(int xTarget, int yTarget, double maxSpeed){
         driveToPos(xTarget, yTarget, maxSpeed,0);
     }
+    public void driveToPos(int xTarget, int yTarget){
+        driveToPos(xTarget,yTarget,1);
+    }
 
-    public void strafe(double speed, double angle, long stopTime){
+    public void strafe(double speed, double angle, Direction strafe, long stopTime){
         DrivetrainModels model = dt.getModel();
         if(model == DrivetrainModels.MECH_FIELD || model == DrivetrainModels.MECH_ROBOT){
             double frontLeft;
@@ -196,7 +274,7 @@ public abstract class MaelstromRobot implements TimeConstants {
             long startTime = System.nanoTime();
             long stopState = 0;
 
-            angle = Math.toRadians(angle);
+            angle = Math.toRadians(angle*-(strafe.value));
             double adjustedAngle = angle + Math.PI/4;
 
             frontLeft = speed * (Math.sin(adjustedAngle));
@@ -225,8 +303,8 @@ public abstract class MaelstromRobot implements TimeConstants {
             feed.update();
         }
     }
-    public void strafe(double speed, double angle){
-        strafe(speed, angle,0);
+    public void strafe(double speed, double angle, Direction strafe){
+        strafe(speed, angle,strafe, 0);
     }
 
     public void stop(){
@@ -236,12 +314,11 @@ public abstract class MaelstromRobot implements TimeConstants {
     public void drive(double power){
         dt.setPower(power);
     }
-
     public void drive(double left, double right){
         dt.setPower(left,right);
     }
 
-    public void drive(MaelstromController controller, double speedMultiplier){
+    public void teleop(MaelstromController controller, double speedMultiplier){
         DrivetrainModels model = dt.getModel();
         if(model == DrivetrainModels.ARCADE){
             this.controller = controller;
@@ -269,7 +346,7 @@ public abstract class MaelstromRobot implements TimeConstants {
             double x = -leftY;
             double y = leftX;
 
-            double angle = Math.atan2(y,x);
+            double angle = /*Math.atan2(y,x)*/controller.getTan(x,y);
             double fieldCentric = angle + Math.toRadians(imu.getYaw());
             double adjustedAngle = fieldCentric + Math.PI / 4;
 
@@ -302,7 +379,7 @@ public abstract class MaelstromRobot implements TimeConstants {
             double x = -leftY;
             double y = leftX;
 
-            double angle = Math.atan2(y,x);
+            double angle = /*Math.atan2(y,x)*/controller.getTan(x,y);
             double adjustedAngle = angle + Math.PI / 4;
 
             this.angle = angle;
