@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import ftc.library.MaelstromUtils.TimeConstants;
 
+/*Custom class for Timer*/
 public class MaelstromTimer implements TimeConstants {
 
     private long startTime;

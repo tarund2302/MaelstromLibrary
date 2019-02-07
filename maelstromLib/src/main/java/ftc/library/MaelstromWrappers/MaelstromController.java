@@ -2,6 +2,7 @@ package ftc.library.MaelstromWrappers;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+/*custom gamepad class which inclues toggles*/
 public class MaelstromController extends Gamepad {
     private String name;
     private Gamepad gamepad;

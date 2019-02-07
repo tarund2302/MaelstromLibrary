@@ -2,6 +2,7 @@ package ftc.library.MaelstromControl;
 
 import ftc.library.MaelstromUtils.MaelstromUtils;
 
+/*custom class for pid constants*/
 public class PIDPackage {
     private double dtKp, dtKi, dtKd,
             distanceKp, distanceKi,distanceKd,

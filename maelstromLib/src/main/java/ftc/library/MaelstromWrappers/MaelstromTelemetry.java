@@ -8,6 +8,7 @@ import ftc.library.MaelstromUtils.MaelstromUtils;
 
 import static java.lang.Thread.sleep;
 
+/*custom telemetry class*/
 public class MaelstromTelemetry {
     private int length;
     private Telemetry telemetry;

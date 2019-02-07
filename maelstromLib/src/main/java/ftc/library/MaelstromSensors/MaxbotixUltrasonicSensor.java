@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
-
+/*Class for Maxbotix ultrasonic sensor*/
 public class MaxbotixUltrasonicSensor implements DistanceSensor  {
 
     private final AnalogInput rangeSensor;

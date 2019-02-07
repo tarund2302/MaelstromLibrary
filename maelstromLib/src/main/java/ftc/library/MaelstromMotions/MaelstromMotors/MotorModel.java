@@ -1,5 +1,6 @@
 package ftc.library.MaelstromMotions.MaelstromMotors;
 
+/*class for motor types and its rpm and cpr*/
 public enum  MotorModel {
 
     ORBITAL20, NEVEREST_3_7, E4T_ENCODER, NEVEREST40, NEVEREST60, USDIGITAL_E4T, REVHDHEX,NEVEREST_NAKED;

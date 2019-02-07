@@ -7,6 +7,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 
 import ftc.library.MaelstromUtils.MaelstromUtils;
 
+/*Custon class for gyro imu*/
 public class MaelstromIMU implements Runnable {
 
     private double relativeYaw = 0;

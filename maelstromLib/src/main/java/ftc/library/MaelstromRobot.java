@@ -197,10 +197,13 @@ public abstract class MaelstromRobot implements TimeConstants {
     public void turn(double degrees, double speed, Direction direction){
         turnAbsolute(imu.getRelativeYaw() + degrees,speed,direction,0);
     }
+
     public void driveToPos(int xTarget, int yTarget, double maxSpeed, long stopTime){
 
         xTarget = xPos.getTargetCounts(xTarget);
         yTarget = yPos.getTargetCounts(yTarget);
+        xPos.setTargetCounts(xTarget);
+        yPos.setTargetCounts(yTarget);
 
         double frontLeftPower;
         double backLeftPower;
@@ -217,15 +220,17 @@ public abstract class MaelstromRobot implements TimeConstants {
         double distance = Math.hypot(xTarget, yTarget);
 
         while(opModeActive() && (stopState <= stopTime)){
-            angle = Math.atan2(xTarget-xPos.getPosition(),yTarget-yPos.getPosition());
-            double adjustedAngle = angle + Math.PI;
+            angle = Math.atan2(xPos.getAngle(),yPos.getAngle());
+            double adjustedAngle = angle + Math.PI/4;
 
             frontLeftPower = Math.sin(adjustedAngle);
             backLeftPower = Math.cos(adjustedAngle);
             frontRightPower = Math.cos(adjustedAngle);
             backRightPower = Math.sin(adjustedAngle);
 
-            double pidPower = distanceDrive.power(distance,Math.hypot(xPos.getPosition(),yPos.getPosition()));
+            double currDistance = Math.hypot(xPos.getPosition(),yPos.getPosition());
+            double pidPower = distanceDrive.power(distance,currDistance);
+
             speeds[0] = frontLeftPower*pidPower;
             speeds[1] = backLeftPower*pidPower;
             speeds[2] = frontRightPower*pidPower;
@@ -238,8 +243,8 @@ public abstract class MaelstromRobot implements TimeConstants {
             dt.rightDrive.motor1.setPower(speeds[2]);
             dt.rightDrive.motor2.setPower(speeds[3]);
 
-            feed.add("X Position:",xPos.trackPosition(xPos.getPosition()));
-            feed.add("Y Position:",yPos.trackPosition(yPos.getPosition()));
+            feed.add("X Position:",xPos.trackPosition());
+            feed.add("Y Position:",yPos.trackPosition());
             feed.add("Distance:",distance);
             feed.add("Stop state:",stopState);
             feed.add("Kp*error:",distanceDrive.getP());
@@ -247,11 +252,9 @@ public abstract class MaelstromRobot implements TimeConstants {
             feed.add("Kd*d:",distanceDrive.getD());
             feed.update();
 
-            if (Math.abs(distance - Math.hypot(xPos.getPosition(), yPos.getPosition())) <= 0.5) {
-                stopState = (System.nanoTime() - startTime) / 1000000;
-            } else {
-                startTime = System.nanoTime();
-            }
+            if (/*Math.abs(distance - currDistance) */ distanceDrive.getError() <= 0.5) {
+                stopState = (System.nanoTime() - startTime) / NANOSECS_PER_MILISEC;
+            } else startTime = System.nanoTime();
         }
         stop();
     }
@@ -318,7 +321,7 @@ public abstract class MaelstromRobot implements TimeConstants {
         dt.setPower(left,right);
     }
 
-    public void teleop(MaelstromController controller, double speedMultiplier){
+    public void driveTeleop(MaelstromController controller, double speedMultiplier){
         DrivetrainModels model = dt.getModel();
         if(model == DrivetrainModels.ARCADE){
             this.controller = controller;
@@ -410,7 +413,6 @@ public abstract class MaelstromRobot implements TimeConstants {
     public double countsToDistance(double counts){
         return (counts*dt.leftDrive.getWheelCircumference()*dt.getDrivenGearReduction())/dt.leftDrive.motor1.getEncoder().getCPR();
     }
-
 
     public boolean opModeActive(){return auto.getOpModeIsActive();}
 

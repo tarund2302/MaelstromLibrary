@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import ftc.library.MaelstromRobot;
 
+/*custom class for regular op modes*/
 public abstract class MaelstromOp extends OpMode {
     public MaelstromRobot robot;
     public MaelstromTelemetry feed = new MaelstromTelemetry(super.telemetry);

@@ -22,16 +22,16 @@ repositories {
 task deleteJar(type: Delete) {
     delete 'libs/jars/maelstromLib.jar'
 }
-
 task createJar(type: Copy) {
     from('build/intermediates/bundles/release/')
     into('libs/jars/')
     include('classes.jar')
     rename('classes.jar', 'maelstromLib.jar')
 }
-
 createJar.dependsOn(deleteJar, build)
 apply from: 'build.release.gradle'
-
 /*
 createJar.dependsOn(deleteJar, build)*/
+
+dependencies {
+}

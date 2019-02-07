@@ -4,6 +4,7 @@ package ftc.library.MaelstromSensors;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+/*Custom class for limit switches*/
 public class MaelstromLimitSwitch {
 
     private DigitalChannel limitSwitch;

@@ -8,6 +8,7 @@ import ftc.library.MaelstromRobot;
 import ftc.library.MaelstromSensors.MaelstromTimer;
 import ftc.library.MaelstromUtils.MaelstromUtils;
 
+/*custom class for set-position servos*/
 public class MaelstromServo {
     private Servo servo;
     private String nameServo;

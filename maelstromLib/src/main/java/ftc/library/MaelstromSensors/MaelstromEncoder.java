@@ -3,6 +3,7 @@ package ftc.library.MaelstromSensors;
 import ftc.library.MaelstromMotions.MaelstromMotors.MaelstromMotor;
 import ftc.library.MaelstromMotions.MaelstromMotors.MotorModel;
 
+/*Custom class for motor encoder*/
 public class MaelstromEncoder {
     private MotorModel model;
     private MaelstromMotor motor;

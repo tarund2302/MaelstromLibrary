@@ -10,6 +10,7 @@ import java.util.List;
 
 import ftc.library.MaelstromSensors.MaelstromLimitSwitch;
 
+/*custom class for creating motor systems*/
 public class MaelstromMotorSystem {
     public MaelstromMotor motor1,motor2,motor3,motor4;
     private int numMotors;
@@ -26,9 +27,7 @@ public class MaelstromMotorSystem {
         motor4 = new MaelstromMotor(name4,encoder, DcMotorSimple.Direction.FORWARD,hwMap);
         motors = Arrays.asList(motor1,motor2,motor3,motor4);
         for(MaelstromMotor motor : motors) {
-            motor.setKP(Kp);
-            motor.setKI(Ki);
-            motor.setKD(Kd);
+            motor.setPID(Kp,Ki,Kd);
         }
         numMotors = 4;
         model = encoder;
@@ -41,9 +40,7 @@ public class MaelstromMotorSystem {
         motor4 = new MaelstromMotor(name4,encoder, direction,hwMap);
         motors = Arrays.asList(motor1,motor2,motor3,motor4);
         for(MaelstromMotor motor : motors) {
-            motor.setKP(Kp);
-            motor.setKI(Ki);
-            motor.setKD(Kd);
+            motor.setPID(Kp,Ki,Kd);
         }
         numMotors = 4;
         model = encoder;
@@ -63,9 +60,7 @@ public class MaelstromMotorSystem {
         motor3 = new MaelstromMotor(name3,encoder, direction,hwMap);
         motors = Arrays.asList(motor1,motor2,motor3);
         for(MaelstromMotor motor : motors) {
-            motor.setKP(Kp);
-            motor.setKI(Ki);
-            motor.setKD(Kd);
+            motor.setPID(Kp,Ki,Kd);
         }
         numMotors = 3;
         model = encoder;
@@ -77,9 +72,7 @@ public class MaelstromMotorSystem {
         motor2 = new MaelstromMotor(name2,encoder, direction,hwMap);
         motors = Arrays.asList(motor1,motor2);
         for(MaelstromMotor motor : motors) {
-            motor.setKP(Kp);
-            motor.setKI(Ki);
-            motor.setKD(Kd);
+            motor.setPID(Kp,Ki,Kd);
         }
         numMotors = 2;
         model = encoder;
@@ -95,6 +88,10 @@ public class MaelstromMotorSystem {
     }
     public MaelstromMotorSystem setKd(double kd){
         for (MaelstromMotor motor: motors) motor.setKP(kd);
+        return this;
+    }
+    public MaelstromMotorSystem setPID(double kp, double ki, double kd){
+        for (MaelstromMotor motor: motors) motor.setPID(kp,ki,kd);
         return this;
     }
 

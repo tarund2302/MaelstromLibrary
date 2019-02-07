@@ -8,6 +8,7 @@ import java.util.List;
 
 import ftc.library.MaelstromMotions.MaelstromServos.Servo.MaelstromServo;
 
+/*custom class for creating set-position servo systems*/
 public class MaelstromServoSystem {
     private MaelstromServo servo1;
     private  MaelstromServo servo2;

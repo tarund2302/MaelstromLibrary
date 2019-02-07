@@ -2,6 +2,7 @@ package ftc.library.MaelstromControl;
 
 import ftc.library.MaelstromUtils.TimeConstants;
 
+/*class for Proportional-On-Measurement control system*/
 public class POMController implements TimeConstants {
     private double i=0;
     private double d;

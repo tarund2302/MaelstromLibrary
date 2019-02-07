@@ -6,6 +6,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import ftc.library.MaelstromWrappers.MaelstromLinearOp;
 
+/*utils class containing clipping and normalizing values*/
 public class MaelstromUtils {
 
     private static MaelstromLinearOp linearOpMode;

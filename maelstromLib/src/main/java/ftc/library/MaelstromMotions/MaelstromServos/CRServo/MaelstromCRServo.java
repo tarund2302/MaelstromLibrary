@@ -3,6 +3,7 @@ package ftc.library.MaelstromMotions.MaelstromServos.CRServo;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+/*custom class for cr servos*/
 public class MaelstromCRServo {
     private CRServo servo;
 

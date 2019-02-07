@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import ftc.library.MaelstromUtils.MaelstromUtils;
 
+/*custom class for linear op mode */
 public abstract class MaelstromLinearOp extends LinearOpMode {
     protected MaelstromTelemetry feed;
     protected MaelstromController controller1, controller2;

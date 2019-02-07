@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import java.util.Arrays;
 import java.util.List;
 
+/*custom class for setting up  cr servo systems*/
 public class MaelstromCRServoSystem {
     private MaelstromCRServo servo1, servo2, servo3, servo4;
     private List<MaelstromCRServo> servos;

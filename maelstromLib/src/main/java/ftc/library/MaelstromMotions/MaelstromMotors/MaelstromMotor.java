@@ -9,6 +9,7 @@ import ftc.library.MaelstromSensors.MaelstromEncoder;
 import ftc.library.MaelstromSensors.MaelstromLimitSwitch;
 import ftc.library.MaelstromUtils.TimeConstants;
 
+/*custom motor class that includes setting rpm and velocity*/
 public class MaelstromMotor implements TimeConstants {
   private DcMotor motor;
   private MaelstromEncoder encoder;
@@ -110,9 +111,9 @@ public class MaelstromMotor implements TimeConstants {
 
     public double calculateVelocityCorrection(){
         double deltaTime = (System.nanoTime() - previousTime)/NANOSECS_PER_MIN;
-        double setRPM;
-        setRPM = getRPM() * targetPower;
-        double power = PID.power(setRPM,getVelocity());
+        double RPM;
+        RPM = getRPM() * targetPower;
+        double power = PID.power(RPM,getVelocity());
         return power;
     }
 
@@ -148,6 +149,11 @@ public class MaelstromMotor implements TimeConstants {
         this.KD = KD;
     }
 
+    public void setPID(double kp, double ki, double kd){
+        setKP(kp);
+        setKI(ki);
+        setKD(kd);
+    }
 
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior){
         motor.setZeroPowerBehavior(behavior);

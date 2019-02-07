@@ -83,12 +83,7 @@ public class MaelstromDrivetrain {
     }
 
     public void setPID(double kp, double ki, double kd){
-        leftDrive.setKp(kp);
-        rightDrive.setKp(kp);
-        leftDrive.setKi(ki);
-        rightDrive.setKi(ki);
-        leftDrive.setKd(kd);
-        rightDrive.setKd(kd);
+        leftDrive.setPID(kp,ki,kd);
+        rightDrive.setPID(kp,ki,kd);
     }
-
 }
