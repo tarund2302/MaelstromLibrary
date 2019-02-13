@@ -25,11 +25,6 @@ public class PIDController implements TimeConstants {
         this.KD = KD;
         this.maxI = maxI;
     }
-    public PIDController(double KP, double KI){
-        this.KP = KP;
-        this.KI = KI;
-        maxI = 0;
-    }
 
     public PIDController(double KP, double KI, double KD){
         this.KP = KP;
@@ -37,6 +32,12 @@ public class PIDController implements TimeConstants {
         this.KD = KD;
         maxI = 0;
     }
+    public PIDController(double KP, double KI){
+        this.KP = KP;
+        this.KI = KI;
+        maxI = 0;
+    }
+
 
     public double power(double target, double currentLoc){
         double error = target - currentLoc;
@@ -83,6 +84,12 @@ public class PIDController implements TimeConstants {
     public void setKI(double KI){this.KI = KI;}
 
     public void setKD(double KD){this.KD = KD;}
+
+    public void setPID(double kp, double ki, double kd){
+        setKP(kp);
+        setKI(ki);
+        setKD(kd);
+    }
 
     public void reset(){
         i = 0;

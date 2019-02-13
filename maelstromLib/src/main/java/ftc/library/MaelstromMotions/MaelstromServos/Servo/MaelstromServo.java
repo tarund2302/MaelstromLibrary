@@ -46,6 +46,14 @@ public class MaelstromServo {
         }
     }
 
+    public boolean isStalled( int time){
+        boolean isStalled = false;
+        double prePos = getPos();
+        if (getPos() == prePos
+                && !timer.elapsedTime(time, MaelstromTimer.Time.SECS)) isStalled = true;
+        return isStalled;
+    }
+
     public void sleep(int time) throws InterruptedException{servo.wait(time);}
 
     public boolean opModeActive(){

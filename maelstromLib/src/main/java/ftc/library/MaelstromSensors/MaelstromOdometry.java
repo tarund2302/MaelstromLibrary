@@ -26,6 +26,8 @@ public class MaelstromOdometry implements TimeConstants {
 
     public int getTargetCounts(int pos){
         pos = (int)((pos/(Math.PI*2))*motor.getEncoder().getCPR());
+        setTargetCounts(pos);
+        target = pos;
         return pos;
     }
     public int trackPosition(){

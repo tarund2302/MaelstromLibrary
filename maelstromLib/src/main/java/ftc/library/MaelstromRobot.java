@@ -74,7 +74,7 @@ public abstract class MaelstromRobot implements TimeConstants {
     public void driveDistance(double distance){
         driveDistance(distance,0.5,Direction.FORWARD,0,10);
     }
-    public void drive(double distance, double maxSpeed, double angle, Direction direction, long stopTime){
+    public void driveAngle(double distance, double maxSpeed, double angle, Direction direction, long stopTime){
         if(dt.getModel() == DrivetrainModels.MECH_FIELD || dt.getModel() == DrivetrainModels.MECH_ROBOT){
             double frontLeftPower;
             double backLeftPower;
@@ -134,11 +134,11 @@ public abstract class MaelstromRobot implements TimeConstants {
         }
 
     }
-    public void drive(double distance, double maxSpeed, double angle, Direction direction){
-        drive(distance, maxSpeed, angle, direction, 0);
+    public void driveAngle(double distance, double maxSpeed, double angle, Direction direction){
+        driveAngle(distance, maxSpeed, angle, direction, 0);
     }
-    public void drive(double distance, double angle, Direction direction){
-        drive(distance, 1, angle, direction);
+    public void driveAngle(double distance, double angle, Direction direction){
+        driveAngle(distance, 1, angle, direction);
     }
 /*    public void drive(double distance, double angle){
         drive(distance, angle, Direction.FORWARD);
@@ -197,13 +197,41 @@ public abstract class MaelstromRobot implements TimeConstants {
     public void turn(double degrees, double speed, Direction direction){
         turnAbsolute(imu.getRelativeYaw() + degrees,speed,direction,0);
     }
+    public void sideTurn(double degrees, String side, Direction direction){
+        long startTime = System.nanoTime();
+        long stopState = 0;
+        PIDController turnSide = new PIDController(pidPackage().getSideKp(), pidPackage().getSideKi(), pidPackage().getSideKd(), 1);
+
+        while(opModeActive() && (stopState <= 1000)){
+            double position = imu.getRelativeYaw();
+            degrees *= direction.value;
+            double power = turnSide.power(degrees,position);
+
+            if(side == "left") drive(power,0);
+            else drive(0,power);
+
+            feed.add("Angle:",imu.getRelativeYaw());
+            feed.add("");
+            feed.add("KP*error: ", turnSide.returnVal()[0]);
+            feed.add("KI*i: ", turnSide.returnVal()[1]);
+            feed.add("KD*d: ", turnSide.returnVal()[2]);
+            feed.add("Error: ", turnSide.getError());
+            feed.add("Power: ", power);
+            feed.update();
+
+            if (/*Math.abs(distance - currDistance) */ turnSide.getError() <= 0.5) {
+                stopState = (System.nanoTime() - startTime) / NANOSECS_PER_MILISEC;
+            } else startTime = System.nanoTime();
+
+            if(startTime/NANOSECS_PER_MILISEC >= 5000) break;
+        }
+        stop();
+    }
 
     public void driveToPos(int xTarget, int yTarget, double maxSpeed, long stopTime){
 
         xTarget = xPos.getTargetCounts(xTarget);
         yTarget = yPos.getTargetCounts(yTarget);
-        xPos.setTargetCounts(xTarget);
-        yPos.setTargetCounts(yTarget);
 
         double frontLeftPower;
         double backLeftPower;
@@ -362,10 +390,10 @@ public abstract class MaelstromRobot implements TimeConstants {
 
             double speeds[] = {Math.sin(adjustedAngle), Math.cos(adjustedAngle), Math.cos(adjustedAngle), Math.sin(adjustedAngle)};
 
-            speeds[0] = (speeds[0] * speedMagnitude * speedMagnitude) - rightX * speedMagnitude;
-            speeds[1] = (speeds[1] * speedMagnitude * speedMagnitude) - rightX * speedMagnitude;
-            speeds[2] = (speeds[2] * speedMagnitude * speedMagnitude) + rightX * speedMagnitude;
-            speeds[3] = (speeds[3] * speedMagnitude * speedMagnitude) + rightX * speedMagnitude;
+            speeds[0] = (speeds[0] * speedMagnitude) - rightX * speedMagnitude;
+            speeds[1] = (speeds[1] * speedMagnitude) - rightX * speedMagnitude;
+            speeds[2] = (speeds[2] * speedMagnitude) + rightX * speedMagnitude;
+            speeds[3] = (speeds[3] * speedMagnitude) + rightX * speedMagnitude;
             this.speeds = speeds;
 
             dt.leftDrive.motor1.setPower(speeds[0]);
@@ -408,6 +436,7 @@ public abstract class MaelstromRobot implements TimeConstants {
 
     public double distanceToCounts(double distance){
         return (distance/(dt.leftDrive.motor1.getEncoder().getWheelCircumference())*dt.getDriveGearReduction()*dt.leftDrive.motor1.getEncoder().getCPR());
+        //return (distance/(dt.leftDrive.getEncoder())*dt.getDriveGearReduction()*dt.leftDrive.motor1.getEncoder().getCPR());
     }
 
     public double countsToDistance(double counts){

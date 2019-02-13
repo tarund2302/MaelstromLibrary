@@ -78,6 +78,9 @@ public class MaelstromDrivetrain {
         return (leftDrive.getInches() + rightDrive.getInches())/2;
     }
 
+    public double getWheelDiameter(){return encoderSensor.getWheelDiameter();}
+    public double setWheelDiameter(){return encoderSensor.getWheelDiameter();}
+
     public DrivetrainModels getModel() {
         return model;
     }

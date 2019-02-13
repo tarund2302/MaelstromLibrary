@@ -7,6 +7,7 @@ import ftc.library.MaelstromControl.PIDController;
 import ftc.library.MaelstromControl.PIDPackage;
 import ftc.library.MaelstromSensors.MaelstromEncoder;
 import ftc.library.MaelstromSensors.MaelstromLimitSwitch;
+import ftc.library.MaelstromSensors.MaelstromTimer;
 import ftc.library.MaelstromUtils.TimeConstants;
 
 /*custom motor class that includes setting rpm and velocity*/
@@ -14,6 +15,7 @@ public class MaelstromMotor implements TimeConstants {
   private DcMotor motor;
   private MaelstromEncoder encoder;
   private PIDPackage pidPackage;
+  private MaelstromTimer timer = new MaelstromTimer();
   private int previousPos = 0;
   private double previousRate;
   private long previousTime = 0;
@@ -63,16 +65,6 @@ public class MaelstromMotor implements TimeConstants {
     }
 
     public void setPower(double power){
-        motorPower = power;
-        if(limitDetection){
-            if (minLim != null && minLim.pressed() && power < 0 ||
-                    maxLim != null && maxLim.pressed() && power > 0)
-                motorPower = 0;
-            else if (minLim != null && minLim.pressed()
-                    && power < 0 && maxLim == null)
-                motorPower = 0;
-        }
-        this.power = power;
         motor.setPower(power);
     }
 
@@ -109,17 +101,11 @@ public class MaelstromMotor implements TimeConstants {
         }
     }
 
-    public double calculateVelocityCorrection(){
-        double deltaTime = (System.nanoTime() - previousTime)/NANOSECS_PER_MIN;
-        double RPM;
-        RPM = getRPM() * targetPower;
-        double power = PID.power(RPM,getVelocity());
-        return power;
-    }
-
     public void setVelocity(double velocity){
         targetPower = velocity;
-        motorPower = calculateVelocityCorrection();
+        double rpm = motorCounts * velocity;
+        power = PID.power(rpm, getVelocity());
+/* motor.setPower((power > 0 && getVelocity() < 0) || (power < 0 && getVelocity() > 0) ? 0: power);*/
         if(!closedLoop) motorPower = targetPower;
         if(limitDetection){
             if (minLim != null && minLim.pressed() && power < 0 ||
@@ -133,10 +119,25 @@ public class MaelstromMotor implements TimeConstants {
         setPower(motorPower);
     }
 
+    public void setPower(double power, MaelstromLimitSwitch lim){
+        motorPower = power;
+            if (lim != null && lim.pressed() && power < 0) motorPower = 0;
+        this.power = power;
+        motor.setPower(motorPower);
+    }
+
     public void setSpeed(double speed){
         double rpm = motorCounts * speed;
         power = PID.power(rpm, getRPM());
         motor.setPower((power > 0 && getRPM() < 0) || (power < 0 && getRPM() > 0) ? 0: power);
+    }
+
+    public boolean isStalled( double power, int time){
+        boolean isStalled = false;
+        double prePos = getCounts();
+        if ((getCounts() == prePos && getPower() < power )
+                && !timer.elapsedTime(time, MaelstromTimer.Time.SECS)) isStalled = true;
+        return isStalled;
     }
 
     public void setKP(double KP){

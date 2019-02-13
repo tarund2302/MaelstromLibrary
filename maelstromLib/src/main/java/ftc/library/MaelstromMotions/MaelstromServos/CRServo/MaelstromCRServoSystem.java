@@ -37,6 +37,9 @@ public class MaelstromCRServoSystem {
 
     public double getPower(){return servo1.getPower();}
 
+    public void sleep(int time) throws InterruptedException {for (MaelstromCRServo servo : servos) servo.wait(time);}
+
+    public void setPower(double p1, double p2){servo1.setPower(p1); servo2.setPower(p2);}
 
 
 

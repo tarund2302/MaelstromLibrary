@@ -77,6 +77,17 @@ public class MaelstromMotorSystem {
         numMotors = 2;
         model = encoder;
     }
+    public MaelstromMotorSystem(String name1, String name2,  double Kp, double Ki, double Kd,DcMotorSimple.Direction direction1, DcMotorSimple.Direction direction2, HardwareMap hwMap, MotorModel encoder){
+        this.systemName = systemName;
+        motor1 = new MaelstromMotor(name1,encoder, direction1,hwMap);
+        motor2 = new MaelstromMotor(name2,encoder, direction2,hwMap);
+        motors = Arrays.asList(motor1,motor2);
+        for(MaelstromMotor motor : motors) {
+            motor.setPID(Kp,Ki,Kd);
+        }
+        numMotors = 2;
+        model = encoder;
+    }
 
     public MaelstromMotorSystem setKp(double kp){
         for (MaelstromMotor motor: motors) motor.setKP(kp);
