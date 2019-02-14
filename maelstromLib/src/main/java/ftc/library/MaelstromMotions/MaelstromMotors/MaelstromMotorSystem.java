@@ -19,8 +19,7 @@ public class MaelstromMotorSystem {
     private double slowPower = 0;
     private String systemName;
     private MotorModel model;
-    public MaelstromMotorSystem(String name1, String name2, String name3, String name4, double Kp, double Ki, double Kd, String systemName, HardwareMap hwMap, MotorModel encoder){
-        this.systemName = systemName;
+    public MaelstromMotorSystem(String name1, String name2, String name3, String name4, double Kp, double Ki, double Kd, HardwareMap hwMap, MotorModel encoder){
         motor1 = new MaelstromMotor(name1,encoder, DcMotorSimple.Direction.FORWARD,hwMap);
         motor2 = new MaelstromMotor(name2,encoder, DcMotorSimple.Direction.FORWARD,hwMap);
         motor3 = new MaelstromMotor(name3,encoder, DcMotorSimple.Direction.FORWARD,hwMap);
@@ -32,29 +31,27 @@ public class MaelstromMotorSystem {
         numMotors = 4;
         model = encoder;
     }
-    public MaelstromMotorSystem(String name1, String name2, String name3, String name4, double Kp, double Ki, double Kd, String systemName,DcMotorSimple.Direction direction, HardwareMap hwMap, MotorModel encoder){
-        this.systemName = systemName;
+    public MaelstromMotorSystem(String name1, String name2, String name3, String name4, double Kp, double Ki, double Kd,DcMotorSimple.Direction direction, HardwareMap hwMap, MotorModel encoder){
+
         motor1 = new MaelstromMotor(name1,encoder, direction,hwMap);
         motor2 = new MaelstromMotor(name2,encoder, direction,hwMap);
         motor3 = new MaelstromMotor(name3,encoder, direction,hwMap);
         motor4 = new MaelstromMotor(name4,encoder, direction,hwMap);
         motors = Arrays.asList(motor1,motor2,motor3,motor4);
         for(MaelstromMotor motor : motors) {
-            motor.setPID(Kp,Ki,Kd);
-        }
-        numMotors = 4;
+        motor.setPID(Kp,Ki,Kd);
+    }
+    numMotors = 4;
         model = encoder;
     }
-    public MaelstromMotorSystem(String name1, String name2, String systemName,DcMotorSimple.Direction direction, HardwareMap hwMap, MotorModel encoder){
-        this.systemName = systemName;
+    public MaelstromMotorSystem(String name1, String name2,DcMotorSimple.Direction direction, HardwareMap hwMap, MotorModel encoder){
         motor1 = new MaelstromMotor(name1,encoder, direction,hwMap);
         motor2 = new MaelstromMotor(name2,encoder, direction,hwMap);
         motors = Arrays.asList(motor1,motor2);
         numMotors = 2;
         model = encoder;
     }
-    public MaelstromMotorSystem(String name1, String name2, String name3, double Kp, double Ki, double Kd, String systemName,DcMotorSimple.Direction direction, HardwareMap hwMap, MotorModel encoder){
-        this.systemName = systemName;
+    public MaelstromMotorSystem(String name1, String name2, String name3, double Kp, double Ki, double Kd, DcMotorSimple.Direction direction, HardwareMap hwMap, MotorModel encoder){
         motor1 = new MaelstromMotor(name1,encoder, direction,hwMap);
         motor2 = new MaelstromMotor(name2,encoder, direction,hwMap);
         motor3 = new MaelstromMotor(name3,encoder, direction,hwMap);
@@ -66,8 +63,7 @@ public class MaelstromMotorSystem {
         model = encoder;
     }
 
-    public MaelstromMotorSystem(String name1, String name2,  double Kp, double Ki, double Kd, String systemName,DcMotorSimple.Direction direction, HardwareMap hwMap, MotorModel encoder){
-        this.systemName = systemName;
+    public MaelstromMotorSystem(String name1, String name2,  double Kp, double Ki, double Kd, DcMotorSimple.Direction direction, HardwareMap hwMap, MotorModel encoder){
         motor1 = new MaelstromMotor(name1,encoder, direction,hwMap);
         motor2 = new MaelstromMotor(name2,encoder, direction,hwMap);
         motors = Arrays.asList(motor1,motor2);
@@ -78,13 +74,20 @@ public class MaelstromMotorSystem {
         model = encoder;
     }
     public MaelstromMotorSystem(String name1, String name2,  double Kp, double Ki, double Kd,DcMotorSimple.Direction direction1, DcMotorSimple.Direction direction2, HardwareMap hwMap, MotorModel encoder){
-        this.systemName = systemName;
         motor1 = new MaelstromMotor(name1,encoder, direction1,hwMap);
         motor2 = new MaelstromMotor(name2,encoder, direction2,hwMap);
         motors = Arrays.asList(motor1,motor2);
         for(MaelstromMotor motor : motors) {
             motor.setPID(Kp,Ki,Kd);
         }
+        numMotors = 2;
+        model = encoder;
+    }
+
+    public MaelstromMotorSystem(String name1, String name2, DcMotorSimple.Direction direction1, DcMotorSimple.Direction direction2, HardwareMap hwMap, MotorModel encoder){
+        motor1 = new MaelstromMotor(name1,encoder, direction1,hwMap);
+        motor2 = new MaelstromMotor(name2,encoder, direction2,hwMap);
+        motors = Arrays.asList(motor1,motor2);
         numMotors = 2;
         model = encoder;
     }
@@ -148,6 +151,17 @@ public class MaelstromMotorSystem {
         for (MaelstromMotor motor : motors){
             motor.setAngle(angle);
         }
+    }
+
+    public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior){
+        for(MaelstromMotor motor : motors){
+            motor.setZeroPowerBehavior(behavior);
+        }
+    }
+
+    public boolean isStalled(double power, int time){
+        boolean isStalled = motor1.isStalled(power, time);
+        return isStalled;
     }
 
     public double getCounts(){

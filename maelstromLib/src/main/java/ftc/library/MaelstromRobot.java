@@ -1,15 +1,17 @@
 package ftc.library;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import ftc.library.MaelstromControl.PIDController;
 import ftc.library.MaelstromControl.PIDPackage;
-import ftc.library.MaelstromDrivetrains.DrivetrainModels;
-import ftc.library.MaelstromDrivetrains.MaelstromDrivetrain;
+
 import ftc.library.MaelstromMotions.MaelstromMotors.Direction;
 import ftc.library.MaelstromSensors.MaelstromIMU;
 import ftc.library.MaelstromSensors.MaelstromOdometry;
 import ftc.library.MaelstromSensors.MaelstromTimer;
+import ftc.library.MaelstromSubsystems.MaelstromDrivetrain.DrivetrainModels;
+import ftc.library.MaelstromSubsystems.MaelstromDrivetrain.MaelstromDrivetrain;
 import ftc.library.MaelstromUtils.MaelstromUtils;
 import ftc.library.MaelstromUtils.TimeConstants;
 import ftc.library.MaelstromWrappers.MaelstromController;
@@ -197,16 +199,18 @@ public abstract class MaelstromRobot implements TimeConstants {
     public void turn(double degrees, double speed, Direction direction){
         turnAbsolute(imu.getRelativeYaw() + degrees,speed,direction,0);
     }
-    public void sideTurn(double degrees, String side, Direction direction){
+    public void sideTurn(double degrees, double ratio, String side, Direction direction){
         long startTime = System.nanoTime();
         long stopState = 0;
         PIDController turnSide = new PIDController(pidPackage().getSideKp(), pidPackage().getSideKi(), pidPackage().getSideKd(), 1);
 
         while(opModeActive() && (stopState <= 1000)){
+
             double position = imu.getRelativeYaw();
             degrees *= direction.value;
             double power = turnSide.power(degrees,position);
 
+            dt.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             if(side == "left") drive(power,0);
             else drive(0,power);
 

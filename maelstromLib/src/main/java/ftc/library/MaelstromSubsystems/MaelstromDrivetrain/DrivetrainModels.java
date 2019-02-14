@@ -1,6 +1,5 @@
-package ftc.library.MaelstromDrivetrains;
+package ftc.library.MaelstromSubsystems.MaelstromDrivetrain;
 
-/*Models for drivetrain controls*/
 public enum DrivetrainModels {
     TANK,
     MECH_FIELD,
