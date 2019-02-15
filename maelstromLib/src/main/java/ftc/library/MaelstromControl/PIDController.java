@@ -4,7 +4,7 @@ import ftc.library.MaelstromSensors.MaelstromTimer;
 import ftc.library.MaelstromUtils.MaelstromUtils;
 import ftc.library.MaelstromUtils.TimeConstants;
 
-/*class for custom PID controller*/
+/*class for PID controller*/
 public class PIDController implements TimeConstants {
     private double i=0;
     private double d;
@@ -70,19 +70,15 @@ public class PIDController implements TimeConstants {
     public double getKP() {
         return KP;
     }
-
     public double getKI() {
         return KI;
     }
-
     public double getKD() {
         return KD;
     }
 
     public void setKP(double KP){this.KP = KP;}
-
     public void setKI(double KI){this.KI = KI;}
-
     public void setKD(double KD){this.KD = KD;}
 
     public void setPID(double kp, double ki, double kd){
