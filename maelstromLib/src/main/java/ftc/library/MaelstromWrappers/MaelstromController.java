@@ -3,7 +3,7 @@ package ftc.library.MaelstromWrappers;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 /*custom gamepad class which inclues toggles*/
-public class MaelstromController extends Gamepad {
+public class MaelstromController {
     private String name;
     private Gamepad gamepad;
 
@@ -15,6 +15,12 @@ public class MaelstromController extends Gamepad {
         this.name = name;
         this.gamepad = g;
     }
+
+    public enum Toggler{
+        ON,
+        OFF
+    }
+
     private double currLeftStickX = 0;
     private double currLeftStickY = 0;
     private double currRightStickX = 0;
@@ -48,6 +54,11 @@ public class MaelstromController extends Gamepad {
     public double rightStickY() {
         return gamepad.right_stick_y;
     }
+
+    public boolean leftStickXMoved(){return leftStickX() > 0;}
+    public boolean leftStickYMoved(){return leftStickY() > 0;}
+    public boolean rightStickXMoved(){return rightStickX() > 0;}
+    public boolean rightStickYMoved(){return rightStickY() > 0;}
 
     public double getTan(double x, double y){
         double tan = -y/x;
@@ -114,6 +125,9 @@ public class MaelstromController extends Gamepad {
     }
     public double leftTrigger() {return gamepad.left_trigger;}
     public double rightTrigger() {return gamepad.right_trigger;}
+
+    public boolean leftTriggerPressed(){return leftTrigger() > 0;}
+    public boolean rightTriggerPressed(){return rightTrigger() > 0;}
 
     public boolean aToggle(){return toggle( a());}
     public boolean bToggle(){return toggle( b());}

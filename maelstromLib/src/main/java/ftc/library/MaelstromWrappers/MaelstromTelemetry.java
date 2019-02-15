@@ -26,6 +26,10 @@ public class MaelstromTelemetry {
         instance = this;
     }
 
+    public static MaelstromTelemetry getFeed(){
+        return instance;
+    }
+
     public void add(String string){
         telemetry.addLine(string);
     }
