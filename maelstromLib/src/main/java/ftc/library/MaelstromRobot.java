@@ -3,6 +3,8 @@ package ftc.library;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+
 import ftc.library.MaelstromControl.PIDController;
 import ftc.library.MaelstromControl.PIDPackage;
 
@@ -12,6 +14,7 @@ import ftc.library.MaelstromSensors.MaelstromOdometry;
 import ftc.library.MaelstromSensors.MaelstromTimer;
 import ftc.library.MaelstromSubsystems.MaelstromDrivetrain.DrivetrainModels;
 import ftc.library.MaelstromSubsystems.MaelstromDrivetrain.MaelstromDrivetrain;
+import ftc.library.MaelstromUtils.AxesSigns;
 import ftc.library.MaelstromUtils.MaelstromUtils;
 import ftc.library.MaelstromUtils.TimeConstants;
 import ftc.library.MaelstromWrappers.MaelstromController;
@@ -36,7 +39,11 @@ public abstract class MaelstromRobot implements TimeConstants {
     private double speeds[];
     public PIDController distanceDrive = new PIDController(pidPackage().getDistanceKp(),pidPackage().getDistanceKi(),pidPackage().getDistanceKd(),1);
 
-    public void driveDistance(double distance, double speed, Direction direction, double stopTime, double timeout){
+    public static void reMapAxis(MaelstromIMU imu, AxesOrder order, AxesSigns signs){
+        imu.remapAxes(imu,order,signs);
+    }
+
+    public void driveDistance(double distance, double speed, Direction direction, double stopTime, double sleep, double timeout){
         dt.eReset();
         distance *= direction.value;
         double counts = distanceToCounts(distance);
@@ -72,9 +79,10 @@ public abstract class MaelstromRobot implements TimeConstants {
             if(/*startTime/NANOSECS_PER_MILISEC >= 5000*/timeoutTimer.elapsedTime(timeout, MaelstromTimer.Time.SECS)) break;
         }
         stop();
+        MaelstromUtils.sleep(sleep);
     }
     public void driveDistance(double distance){
-        driveDistance(distance,0.5,Direction.FORWARD,0,10);
+        driveDistance(distance,0.5,Direction.FORWARD,0,10,MaelstromUtils.DEFAULT_SLEEP_TIME);
     }
     public void driveAngle(double distance, double maxSpeed, double angle, Direction direction, long stopTime){
         if(dt.getModel() == DrivetrainModels.MECH_FIELD || dt.getModel() == DrivetrainModels.MECH_ROBOT){
@@ -357,8 +365,8 @@ public abstract class MaelstromRobot implements TimeConstants {
         DrivetrainModels model = dt.getModel();
         if(model == DrivetrainModels.ARCADE){
             this.controller = controller;
-            yDirection = speedMultiplier * controller.left_stick_y;
-            xDirection = speedMultiplier * controller.right_stick_x;
+            yDirection = speedMultiplier * controller.leftStickY();
+            xDirection = speedMultiplier * controller.rightStickX();
 
             double left = yDirection - xDirection;
             double right = yDirection + xDirection;
@@ -366,23 +374,23 @@ public abstract class MaelstromRobot implements TimeConstants {
             drive(left,right);
         }
         else if(model == DrivetrainModels.TANK){
-            double left = controller.left_stick_y;
-            double right = controller.right_stick_y;
+            double left = controller.leftStickY();
+            double right = controller.rightStickY();
 
 
             drive(left,right);
         }
         else if(model == DrivetrainModels.MECH_FIELD){
 
-            double leftY = controller.left_stick_y;
-            double leftX = controller.right_stick_x;
-            double rightX = controller.right_stick_x;
+            double leftY = controller.leftStickY();
+            double leftX = controller.leftStickX();
+            double rightX = controller.rightStickX();
 
             double x = -leftY;
             double y = leftX;
 
             double angle = /*Math.atan2(y,x)*/controller.getTan(x,y);
-            double fieldCentric = angle + Math.toRadians(imu.getYaw());
+            double fieldCentric = angle - Math.toRadians(imu.getYaw());
             double adjustedAngle = fieldCentric + Math.PI / 4;
 
             this.angle = angle;
@@ -407,14 +415,14 @@ public abstract class MaelstromRobot implements TimeConstants {
         }
         else if(model == DrivetrainModels.MECH_ROBOT){
 
-            double leftY = controller.left_stick_y;
-            double leftX = controller.right_stick_x;
-            double rightX = controller.right_stick_x;
+            double leftY = controller.leftStickY();
+            double leftX = controller.leftStickX();
+            double rightX = controller.rightStickX();
 
             double x = -leftY;
             double y = leftX;
 
-            double angle = /*Math.atan2(y,x)*/controller.getTan(x,y);
+            double angle = Math.atan2(y,x)/*controller.getTan(x,y)*/;
             double adjustedAngle = angle + Math.PI / 4;
 
             this.angle = angle;

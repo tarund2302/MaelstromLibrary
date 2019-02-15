@@ -3,8 +3,10 @@ package ftc.library.MaelstromSensors;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 
+import ftc.library.MaelstromUtils.AxesSigns;
 import ftc.library.MaelstromUtils.MaelstromUtils;
 
 /*Custon class for gyro imu*/
@@ -22,6 +24,7 @@ public class MaelstromIMU implements Runnable {
         Thread updateYaw = new Thread(this);
         updateYaw.start();
     }
+
 
     private void setParameters(){
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -81,6 +84,8 @@ public class MaelstromIMU implements Runnable {
         return angle;
     }
 
+    //imu.
+
     public double getYaw() {return getAngles()[0];}
 
     public double getRoll(){return getAngles()[1];}
@@ -107,6 +112,46 @@ public class MaelstromIMU implements Runnable {
             }
             catch (InterruptedException e) {
             }
+        }
+    }
+
+    public void write8(BNO055IMU.Register register, int bVal){
+        imu.write8(register,bVal);
+    }
+
+    public BNO055IMU.Parameters getParameters(){
+        return imu.getParameters();
+    }
+
+    public static void remapAxes(MaelstromIMU imu, AxesOrder order, AxesSigns signs) {
+        try {
+            // the indices correspond with the 2-bit encodings specified in the datasheet
+            int[] indices = order.indices();
+            int axisMapConfig = 0;
+            axisMapConfig |= (indices[0] << 4);
+            axisMapConfig |= (indices[1] << 2);
+            axisMapConfig |= (indices[2] << 0);
+
+            // the BNO055 driver flips the first orientation vector so we also flip here
+            int axisMapSign = signs.bVal ^ (0b100 >> indices[0]);
+
+            // Enter CONFIG mode
+            imu.write8(BNO055IMU.Register.OPR_MODE, BNO055IMU.SensorMode.CONFIG.bVal & 0x0F);
+
+            Thread.sleep(100);
+
+            // Write the AXIS_MAP_CONFIG register
+            imu.write8(BNO055IMU.Register.AXIS_MAP_CONFIG, axisMapConfig & 0x3F);
+
+            // Write the AXIS_MAP_SIGN register
+            imu.write8(BNO055IMU.Register.AXIS_MAP_SIGN, axisMapSign & 0x07);
+
+            // Switch back to the previous mode
+            imu.write8(BNO055IMU.Register.OPR_MODE, imu.getParameters().mode.bVal & 0x0F);
+
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 

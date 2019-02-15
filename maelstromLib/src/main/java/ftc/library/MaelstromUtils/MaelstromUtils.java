@@ -10,6 +10,16 @@ import ftc.library.MaelstromWrappers.MaelstromLinearOp;
 public class MaelstromUtils {
 
     private static MaelstromLinearOp linearOpMode;
+    public static double DEFAULT_SLEEP_TIME = 0;
+
+    public static void sleep (int sleep) {
+        try {Thread.sleep(sleep);}
+        catch (InterruptedException e) {e.printStackTrace();}
+    }
+    public static void sleep (double sleep) {
+        try {Thread.sleep((long) sleep);}
+        catch (InterruptedException e) {e.printStackTrace();}
+    }
 
     public static double clipValue (double input, double clipRange) {
 
