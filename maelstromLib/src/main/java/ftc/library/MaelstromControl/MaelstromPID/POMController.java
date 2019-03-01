@@ -1,4 +1,4 @@
-package ftc.library.MaelstromControl;
+package ftc.library.MaelstromControl.MaelstromPID;
 
 import ftc.library.MaelstromUtils.TimeConstants;
 

@@ -51,6 +51,14 @@ public class MaelstromMotorSystem {
         numMotors = 2;
         model = encoder;
     }
+    public MaelstromMotorSystem(String name1, String name2,  MotorModel encoder, HardwareMap hwMap){
+        motor1 = new MaelstromMotor(name1,encoder, hwMap);
+        motor2 = new MaelstromMotor(name2,encoder, hwMap);
+        motors = Arrays.asList(motor1,motor2);
+        numMotors = 2;
+        model = encoder;
+    }
+
     public MaelstromMotorSystem(String name1, String name2, String name3, double Kp, double Ki, double Kd, DcMotorSimple.Direction direction, HardwareMap hwMap, MotorModel encoder){
         motor1 = new MaelstromMotor(name1,encoder, direction,hwMap);
         motor2 = new MaelstromMotor(name2,encoder, direction,hwMap);

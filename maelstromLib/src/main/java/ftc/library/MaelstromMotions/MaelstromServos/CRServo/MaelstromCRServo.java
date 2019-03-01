@@ -15,6 +15,8 @@ public class MaelstromCRServo {
         servo.setDirection(direction);
     }
 
+    public void setDirection(CRServo.Direction direction){servo.setDirection(direction);}
+
     public void setPower(double power){
         servo.setPower(power);
     }

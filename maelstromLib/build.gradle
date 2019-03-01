@@ -34,4 +34,5 @@ apply from: 'build.release.gradle'
 createJar.dependsOn(deleteJar, build)*/
 
 dependencies {
+    implementation project(':FtcRobotController')
 }

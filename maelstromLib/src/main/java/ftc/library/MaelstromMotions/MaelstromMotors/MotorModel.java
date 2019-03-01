@@ -3,7 +3,7 @@ package ftc.library.MaelstromMotions.MaelstromMotors;
 /*class for motor types and its rpm and cpr*/
 public enum  MotorModel {
 
-    ORBITAL20, NEVEREST_3_7, E4T_ENCODER, NEVEREST40, NEVEREST60, USDIGITAL_E4T, REVHDHEX,NEVEREST_NAKED;
+    ORBITAL20, NEVEREST_3_7, E4T_ENCODER, NEVEREST40, NEVEREST60, USDIGITAL_E4T, REVHDHEX,NEVEREST_NAKED, NONE;
     public static double DEFAULT_CPR = 2240;
     public double CPR(MotorModel motorModel) {
         switch (motorModel){

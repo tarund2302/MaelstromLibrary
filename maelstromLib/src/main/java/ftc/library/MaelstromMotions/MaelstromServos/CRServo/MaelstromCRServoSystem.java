@@ -1,5 +1,6 @@
 package ftc.library.MaelstromMotions.MaelstromServos.CRServo;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import java.util.Arrays;
@@ -12,6 +13,10 @@ public class MaelstromCRServoSystem {
 
     public MaelstromCRServoSystem(String name1, String name2, HardwareMap hwMap){
         this( new MaelstromCRServo(name1,hwMap), new MaelstromCRServo(name2, hwMap));
+    }
+
+    public MaelstromCRServoSystem(String name1, String name2, CRServo.Direction direction1, CRServo.Direction direction2, HardwareMap hwMap){
+        this (new MaelstromCRServo(name1,direction1,hwMap),new MaelstromCRServo(name2,direction2,hwMap));
     }
     public MaelstromCRServoSystem(String name1, String name2, String name3, HardwareMap hwMap){
         this ( new MaelstromCRServo(name1,hwMap), new MaelstromCRServo(name2, hwMap), new MaelstromCRServo(name3, hwMap));
@@ -36,6 +41,12 @@ public class MaelstromCRServoSystem {
     public void setPower(double power){for (MaelstromCRServo servo : servos) servo.setPower(power);}
 
     public double getPower(){return servo1.getPower();}
+
+    public void setDirection(CRServo.Direction direction){
+        for(MaelstromCRServo servo : servos){
+            setDirection(direction);
+        }
+    }
 
     public void sleep(int time) throws InterruptedException {for (MaelstromCRServo servo : servos) servo.wait(time);}
 

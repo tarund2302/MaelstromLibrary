@@ -5,9 +5,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 
-import ftc.library.MaelstromControl.PIDController;
-import ftc.library.MaelstromControl.PIDPackage;
+import ftc.library.MaelstromControl.MaelstromPID.PIDController;
+import ftc.library.MaelstromControl.MaelstromPID.PIDPackage;
 
+import ftc.library.MaelstromControl.MaelstromPurePursuit.WayPoint;
 import ftc.library.MaelstromMotions.MaelstromMotors.Direction;
 import ftc.library.MaelstromSensors.MaelstromIMU;
 import ftc.library.MaelstromSensors.MaelstromOdometry;
@@ -240,7 +241,10 @@ public abstract class MaelstromRobot implements TimeConstants {
         stop();
     }
 
-    public void driveToPos(int xTarget, int yTarget, double maxSpeed, long stopTime){
+    public void driveToPoint(WayPoint point, double maxSpeed, long stopTime){
+
+        double xTarget = point.getX();
+        double yTarget = point.getY();
 
         xTarget = xPos.getTargetCounts(xTarget);
         yTarget = yPos.getTargetCounts(yTarget);
@@ -298,11 +302,11 @@ public abstract class MaelstromRobot implements TimeConstants {
         }
         stop();
     }
-    public void driveToPos(int xTarget, int yTarget, double maxSpeed){
-        driveToPos(xTarget, yTarget, maxSpeed,0);
+    public void driveToPoint(WayPoint point, double maxSpeed){
+        driveToPoint(point, maxSpeed,0);
     }
-    public void driveToPos(int xTarget, int yTarget){
-        driveToPos(xTarget,yTarget,1);
+    public void driveToPoint(WayPoint point){
+        driveToPoint(point,1);
     }
 
     public void strafe(double speed, double angle, Direction strafe, long stopTime){

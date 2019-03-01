@@ -3,8 +3,8 @@ package ftc.library.MaelstromMotions.MaelstromMotors;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import ftc.library.MaelstromControl.PIDController;
-import ftc.library.MaelstromControl.PIDPackage;
+import ftc.library.MaelstromControl.MaelstromPID.PIDController;
+import ftc.library.MaelstromControl.MaelstromPID.PIDPackage;
 import ftc.library.MaelstromSensors.MaelstromEncoder;
 import ftc.library.MaelstromSensors.MaelstromLimitSwitch;
 import ftc.library.MaelstromSensors.MaelstromTimer;

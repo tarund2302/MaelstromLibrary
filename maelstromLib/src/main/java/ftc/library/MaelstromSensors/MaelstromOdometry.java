@@ -14,24 +14,24 @@ public class MaelstromOdometry implements TimeConstants {
     private long previousTime = 0;
     private double rpm = 0;
     private double power;
-    private int target;
+    private double target;
 
     public MaelstromOdometry(String name, MotorModel model, HardwareMap hwMap){
         this.motor = new MaelstromMotor(name,model,hwMap);
     }
 
-    public int getPosition(){
+    public double getPosition(){
         return motor.getCounts();
     }
 
-    public int getTargetCounts(int pos){
-        pos = (int)((pos/(Math.PI*2))*motor.getEncoder().getCPR());
+    public double getTargetCounts(double pos){
+        pos = (double)((pos/(Math.PI*2))*motor.getEncoder().getCPR());
         setTargetCounts(pos);
         target = pos;
         return pos;
     }
-    public int trackPosition(){
-        int pos = (int) ((getPosition()*motor.getEncoder().getCPR())*(2*Math.PI));
+    public double trackPosition(){
+        double pos = (double) ((getPosition()*motor.getEncoder().getCPR())*(2*Math.PI));
         return pos;
     }
     public void reset(){
@@ -39,7 +39,7 @@ public class MaelstromOdometry implements TimeConstants {
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void setTargetCounts(int target){
+    public void setTargetCounts(double target){
         this.target = target;
     }
 
